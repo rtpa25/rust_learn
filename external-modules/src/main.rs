@@ -1,8 +1,8 @@
-use garden::vegetable::Asparagus;
-
 pub mod garden;
+pub mod plant;
 
 fn main() {
-    let a = Asparagus { stalks: 0 };
+    let a = garden::Asparagus { stalks: 0 };
     println!("Hello, world!, {:?}", a);
+    plant::grow();
 }
