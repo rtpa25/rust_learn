@@ -30,10 +30,13 @@
 //   hashmap will be easier to work with at stages 2 and 3.
 
 pub mod bill;
+pub mod db;
+pub mod manager;
 pub mod util;
 
 fn main() {
-    let mut db = bill::Database::new();
+    let db = db::Database::new();
+    let mut manager = manager::Manager::new(db);
     println!("==============Welcome to Bill Manager==============");
     loop {
         println!("Hit 1. Add bill");
@@ -47,103 +50,25 @@ fn main() {
             Ok(val) => match val.as_str() {
                 "1" => {
                     println!("You choose to add a bill");
-                    println!("Enter bill name: ");
-                    let name = match util::collect_user_input() {
-                        Ok(val) => val,
-                        Err(e) => panic!("Error occured while reading user data: {:?}", e),
-                    };
-                    println!("Enter bill amount: ");
-                    let amount = match util::collect_user_input() {
-                        Ok(val) => match val.parse::<f64>() {
-                            Ok(val) => val,
-                            Err(e) => panic!("Error occured while parsing amount: {:?}", e),
-                        },
-                        Err(e) => panic!("Error occured while reading user data: {:?}", e),
-                    };
-
-                    db.add_bill(name, amount);
-                    println!("Bill added successfully")
+                    manager.add_bill();
                 }
                 "2" => {
                     println!("You choose to view bills");
-                    db.view_bills();
+                    manager.view_bills();
                 }
                 "3" => {
                     println!("You choose to remove bill");
-                    db.view_bills();
-                    println!("Enter bill id you wanna remove: ");
-                    let id = match util::collect_user_input() {
-                        Ok(val) => val,
-                        Err(e) => panic!("Error occured while reading user data: {:?}", e),
-                    };
-                    db.remove_bill(&id);
-                    println!("Bill removed successfully");
+                    manager.remove_bill();
                 }
                 "4" => {
                     println!("You choose to edit bill");
-                    db.view_bills();
-                    println!("Enter bill id you wanna edit: ");
-                    let id = match util::collect_user_input() {
-                        Ok(val) => val,
-                        Err(e) => panic!("Error occured while reading user data: {:?}", e),
-                    };
-                    let bill = db.get_bill(&id);
-                    if bill.is_none() {
-                        println!("Bill not found");
-                        continue;
-                    }
-
-                    println!("Enter new amount, for bill id: {}", id);
-                    println!("hit enter to keep the same amount");
-                    let mut amount = match util::collect_user_input() {
-                        Ok(val) => match val.parse::<f64>() {
-                            Ok(val) => Some(val),
-                            Err(_) => None,
-                        },
-                        Err(_) => None,
-                    };
-                    if amount.is_none() {
-                        amount = Some(bill.unwrap().amount);
-                    }
-
-                    println!("Enter new name, for bill id: {}", id);
-                    println!("hit enter without anything to keep the same name");
-                    let mut name = match util::collect_user_input() {
-                        Ok(val) => {
-                            if val.is_empty() {
-                                None
-                            } else {
-                                Some(val)
-                            }
+                    match manager.edit_bill() {
+                        Ok(_) => println!("Bill edited successfully"),
+                        Err(e) => {
+                            println!("{}", e);
+                            continue;
                         }
-                        Err(_) => None,
-                    };
-                    if name.is_none() {
-                        name = Some(bill.unwrap().name.clone());
                     }
-
-                    if name == Some(bill.unwrap().name.clone())
-                        && amount == Some(bill.unwrap().amount)
-                    {
-                        println!("No changes made");
-                        continue;
-                    }
-
-                    println!(
-                        "Bill with id: {} will be updated to amount: {:?} and name: {:?}",
-                        id, amount, name
-                    );
-                    println!("Are you sure you want to update? (y/n)");
-                    let confirm = match util::collect_user_input() {
-                        Ok(val) => val,
-                        Err(e) => panic!("Error occured while reading user data: {:?}", e),
-                    };
-                    if confirm != "y" {
-                        println!("Exiting...");
-                        continue;
-                    }
-                    db.edit_bill(&id, amount, name);
-                    println!("Bill updated successfully");
                 }
                 "5" => {
                     println!("Exiting...");
