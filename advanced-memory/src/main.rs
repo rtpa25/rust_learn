@@ -53,7 +53,7 @@ fn main() {
     let entry = Entry { id: 1 };
     println!("Hello, world! {}", entry.id);
 
-    let entry_ptr = Box::new(entry);
+    let entry_ptr: Box<Entry> = Box::new(entry);
     println!("Hello, world! {}", entry_ptr.id);
 
     let entry_stack = *entry_ptr;
