@@ -3,9 +3,5 @@
 version = 3
 
 [[package]]
-name = "slice-patterns"
-version = "0.1.0"
-
-[[package]]
-name = "type-conversions"
+name = "match-guards-binding"
 version = "0.1.0"

@@ -1,6 +1,5 @@
-workspace = { members = ["type-conversions"] }
 [package]
-name = "slice-patterns"
+name = "match-guards-binding"
 version = "0.1.0"
 edition = "2021"
 
