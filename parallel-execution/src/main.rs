@@ -134,6 +134,9 @@ fn main() {
         data
     });
 
+    // This will cause an error because on the above thread while calling move we moved all the used variables inside the thread spawn body inside the thread-local and main thread has no access to it anymore
+    // println!("Waiting on thread, {:?}", data);
+
     match caps.join() {
         Ok(v) => println!("Thread returned: {:?}", v),
         Err(e) => println!("Error: {:?}", e),
@@ -320,15 +323,7 @@ fn spawn_light_thread(receiver: Receiver<LightMsg>) -> JoinHandle<LightStatus> {
                                 "off"
                             }
                         );
-                        println!(
-                            "Light color changed to: {}",
-                            format!(
-                                "{}{}{}",
-                                "RGB(".green(),
-                                format!("{}, {}, {}", r, g, b).yellow(),
-                                ")".green()
-                            )
-                        );
+                        println!("Light color changed to: {}", "color".truecolor(r, g, b));
                         status = LightStatus::On;
                     }
                     LightMsg::On => {
@@ -375,5 +370,3 @@ fn spawn_light_thread(receiver: Receiver<LightMsg>) -> JoinHandle<LightStatus> {
 // * Use the `colored` crate if you want to get fancy and display actual colors
 // * The docs.rs site can be used to read documentation for third-party crates
 // * Disconnection can be accomplished by dropping the sender, or
-//   by telling the thread to self-terminate
-// * Use `cargo test --bin a39` to test your program to ensure all cases are covered
