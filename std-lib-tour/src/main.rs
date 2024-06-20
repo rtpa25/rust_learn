@@ -1,6 +1,9 @@
 use std::{cmp::Ordering, collections::HashMap, ops::Add};
 
+use fruit_stand::Fruit;
+
 pub mod fruit_stand;
+pub mod iter_activity;
 
 // ordered by the variants instead which means client services is less than marketing and marketing is less than ops.
 #[derive(PartialEq, PartialOrd)]
@@ -147,6 +150,40 @@ fn main() {
 
     for (key, value) in map {
         println!("{}: {}", key, value);
+    }
+
+    let mut fruits = HashMap::new();
+    fruits.insert(Fruit::Apple, 10);
+    fruits.insert(Fruit::Banana, 20);
+    fruits.insert(Fruit::Orange, 30);
+
+    let mut fruit_stand = fruit_stand::FruitStand { fruits };
+
+    for (fruit, count) in &fruit_stand {
+        println!("{:?}: {}", fruit, count);
+    }
+
+    for (fruit, count) in &fruit_stand {
+        println!("{:?}: {}", fruit, count);
+    }
+
+    for (fruit, count) in &mut fruit_stand {
+        if fruit == &Fruit::Banana {
+            *count -= 10;
+        }
+        println!("{:?}: {}", fruit, count);
+    }
+
+    let mut multiplier = iter_activity::Multiplier::new();
+
+    for _ in 0..5 {
+        println!("Multiplier: {}", multiplier.next().unwrap());
+    }
+
+    multiplier.powerup(2);
+
+    for _ in 0..5 {
+        println!("Multiplier: {}", multiplier.next().unwrap());
     }
 }
 
