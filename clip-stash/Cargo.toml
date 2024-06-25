@@ -1,0 +1,19 @@
+[package]
+name = "clipstash"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "clipstash"
+path = "src/lib/mod.rs"
+
+[dependencies]
+chrono = { version = "0.4.38", features = ["serde"] }
+derive_more = "0.99.18"
+rand = "0.8.5"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1.0.61"
+uuid = { version = "1.9.1", features = ["serde", "v4"] }
