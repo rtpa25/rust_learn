@@ -1,6 +1,6 @@
 use crate::data::DbId;
 use crate::{ClipError, Shortcode, Time};
-use chrono::NaiveDateTime;
+use chrono::{NaiveDateTime, Utc};
 use std::convert::TryFrom;
 use std::str::FromStr;
 
@@ -37,6 +37,14 @@ pub struct GetClip {
     pub(in crate::data) shortcode: String,
 }
 
+impl From<crate::service::ask::GetClip> for GetClip {
+    fn from(value: crate::service::ask::GetClip) -> Self {
+        Self {
+            shortcode: value.shortcode.into_inner(),
+        }
+    }
+}
+
 impl From<Shortcode> for GetClip {
     fn from(value: Shortcode) -> Self {
         Self {
@@ -57,8 +65,22 @@ pub struct NewClip {
     pub(in crate::data) content: String,
     pub(in crate::data) title: Option<String>,
     pub(in crate::data) posted: i64,
-    pub(in crate::data) expires: Option<NaiveDateTime>,
+    pub(in crate::data) expires: Option<i64>,
     pub(in crate::data) password: Option<String>,
+}
+
+impl From<crate::service::ask::NewClip> for NewClip {
+    fn from(value: crate::service::ask::NewClip) -> Self {
+        Self {
+            clip_id: DbId::new().to_string(),
+            shortcode: Shortcode::default().into(),
+            content: value.content.into_inner(),
+            title: value.title.into_inner(),
+            posted: Utc::now().timestamp(),
+            expires: value.expires.into_inner().map(|e| e.timestamp()),
+            password: value.password.into_inner(),
+        }
+    }
 }
 
 pub struct UpdateClip {
@@ -67,4 +89,16 @@ pub struct UpdateClip {
     pub(in crate::data) title: Option<String>,
     pub(in crate::data) expires: Option<i64>,
     pub(in crate::data) password: Option<String>,
+}
+
+impl From<crate::service::ask::UpdateClip> for UpdateClip {
+    fn from(value: crate::service::ask::UpdateClip) -> Self {
+        Self {
+            shortcode: value.shortcode.into_inner(),
+            content: value.content.into_inner(),
+            title: value.title.into_inner(),
+            expires: value.expires.into_inner().map(|e| e.timestamp()),
+            password: value.password.into_inner(),
+        }
+    }
 }
